@@ -101,6 +101,7 @@ function boldSelection() {
 export class EditorToolbar implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
+
     constructor(editor: YangEditor) {
         this.context = editor;
         this.element = document.createElement("div");
@@ -137,8 +138,57 @@ export class EditorToolbar implements EditorComponent {
     }
 
     insertCollapse() {
-        this.context
+        let contentElement = this.context.content.getElement();
+
+        // find the top most element
+        const selection = document.getSelection();
+
+        if (selection == null || !selection.rangeCount) {return;}
+
+        const range = selection.getRangeAt(0);
+
+        // 检查是否已经在加粗标签内
+        let parentElement = range.commonAncestorContainer;
+        while (parentElement.parentElement !== contentElement && parentElement.parentElement !== null) {
+            parentElement = parentElement.parentElement;
+        }
+
+        if(parentElement.parentElement === contentElement) {
+            for(let child of contentElement.children) {
+                if(child === parentElement) {
+                    child.after(new EditorCollapse(this.context).onMount());
+                    break;
+                }
+            }
+        }
+
+
     }
+}
+
+export class EditorCollapse implements EditorComponent {
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("div");
+
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+    onMount(): HTMLElement {
+        this.element.innerText = "inserted collapse";
+        return this.getElement();
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
 }
 
 export class EditorParagraph implements EditorComponent {

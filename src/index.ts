@@ -9,9 +9,9 @@ export interface YangEditorOptions {
 
 export class YangEditor {
 
-    private readonly element: HTMLElement;
-    private readonly toolbar: EditorToolbar;
-    private readonly content: EditorContent;
+    public readonly element: HTMLElement;
+    public readonly toolbar: EditorToolbar;
+    public readonly content: EditorContent;
 
     private components: Array<EditorComponent> = new Array<EditorComponent>();
 
