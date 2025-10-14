@@ -1,0 +1,13 @@
+### IDE ###
+.idea
+.code
+
+### OS ###
+.DS_Store
+
+### Project ###\
+node_modules
+dist
+
+
+

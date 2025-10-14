@@ -1,0 +1,72 @@
+.yang-editor {
+    background: #eae9e9;
+    padding: 0 10px;
+    text-align: left;
+}
+
+.yang-editor p,
+.yang-editor div{
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    display: block;
+}
+
+.yang-editor .yang-editor-content {
+    background: white;
+    outline: none;
+    padding: 4px;
+}
+
+.yang-editor .yang-editor-toolbar {
+    background: yellow;
+    height: 24px;
+    line-height: 24px;
+    user-select: none;
+    padding: 0 4px;
+}
+
+.yang-editor .yang-editor-toolbar-button {
+    padding: 2px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.yang-editor .yang-editor-paragraph {
+    border: 1px solid transparent;
+    padding: 4px;
+    position: relative;
+}
+
+.yang-editor .yang-editor-paragraph:hover {
+    border-left: 4px solid #dedede;
+    border-radius: 4px;
+}
+
+
+.yang-editor .yang-editor-paragraph .yang-editor-paragraph-text{
+    width: 100%;
+    /*border: 1px solid blue;*/
+}
+
+.yang-editor .yang-editor-paragraph .yang-editor-paragraph-delete {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    cursor: pointer;
+    padding: 2px 4px;
+    display: none;
+}
+
+.yang-editor .yang-editor-paragraph:hover .yang-editor-paragraph-delete{
+   display: block;
+}
+
+
+
+
+
+
+
