@@ -3,13 +3,15 @@ import {globalEventCenter} from "./context";
 import {Event} from "./event";
 import {Constants, DeleteParagraphData, SplitParagraphData} from "./common";
 
-interface YangEditorOptions {
+export interface YangEditorOptions {
     elem: string;
 }
 
-class YangEditor {
+export class YangEditor {
 
-    private element: HTMLElement;
+    private readonly element: HTMLElement;
+    private readonly toolbar: EditorToolbar;
+    private readonly content: EditorContent;
 
     private components: Array<EditorComponent> = new Array<EditorComponent>();
 
@@ -19,90 +21,19 @@ class YangEditor {
             throw new Error(`Invalid Yang Editor option "${options.elem}"`);
         }
         this.element = element;
-        this.element.classList.add("yang-editor");
-
-        globalEventCenter.on(Constants.EV_INSERT_PARAGRAPH, this.insertParagraph.bind(this));
-        globalEventCenter.on<SplitParagraphData>(Constants.EV_SPLIT_PARAGRAPH, this.splitParagraph.bind(this));
-        globalEventCenter.on<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, this.deleteParagraph.bind(this));
+        this.toolbar = new EditorToolbar(this);
+        this.content = new EditorContent(this);
     }
 
     render() {
         // clear elements
+        this.element.classList.add("yang-editor");
         this.element.innerHTML = "";
         // add components
-        let toolbarArea = new EditorToolbar(this.element);
-        let contentArea = new EditorContent(this.element);
-        // default paragraph
-        let hasFocusedParagraph = false;
-        let hasEndParagraph = false;
-        if(this.components.length > 0 && this.components[this.components.length - 1] instanceof EditorParagraph) {
-            hasEndParagraph = true;
-        }
-        for(let component of this.components) {
-            if(component instanceof EditorParagraph){
-                if(component.getFocus()) {
-                    hasFocusedParagraph = true;
-                }
-            }
-        }
-        if(!hasEndParagraph) {
-            this.components.push(new EditorParagraph("", !hasFocusedParagraph));
-        }
-
-        // mounts
-        for(let component of this.components) {
-            let dom = component.onMount();
-            contentArea.getElement().appendChild(dom);
-        }
-        // mounted
-        for(let component of this.components) {
-            component.onMounted()
-        }
-
+        this.element.appendChild(this.toolbar.onMount());
+        this.element.appendChild(this.content.onMount());
     }
 
-    insertParagraph(event: Event<undefined>) {
-        console.log("insert paragraph");
-    }
-
-    splitParagraph(event: Event<SplitParagraphData>) {
-        let idx = this.components.indexOf(event.payload.sourceComponent);
-        if (idx !== -1) {
-            this.components.forEach(component => {
-               if(component instanceof EditorParagraph){
-                   component.setFocus(false);
-               }
-            });
-            this.components = [
-                ...this.components.slice(0, idx),
-                new EditorParagraph(event.payload.leftText),
-                new EditorParagraph(event.payload.rightText, true),
-                ...this.components.slice(idx + 1),
-            ];
-            this.render();
-        }
-    }
-
-    deleteParagraph(event: Event<DeleteParagraphData>) {
-        let idx = this.components.indexOf(event.payload.sourceComponent);
-        if (idx !== -1) {
-
-            this.components.forEach(component => {
-                if(component instanceof EditorParagraph){
-                    component.setFocus(false);
-                }
-            });
-            if(idx > 0) {
-                let lastComponent = this.components[idx - 1];
-                if(lastComponent instanceof EditorParagraph){
-                    lastComponent.setFocus(true);
-                }
-            }
-
-            this.components.splice(idx, 1);
-            this.render();
-        }
-    }
 }
 
 function create(options: YangEditorOptions): YangEditor {

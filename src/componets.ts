@@ -1,24 +1,54 @@
 import {globalEventCenter} from "./context";
-import YangEditorFacade from "./index";
+import { YangEditor } from "./index";
 import {Constants, DeleteParagraphData, SplitParagraphData} from "./common";
 
 export interface EditorElement {
-    getElement(): HTMLElement | undefined;
 }
 
 export interface EditorComponent extends EditorElement {
+    getElement(): HTMLElement;
     onMount(): HTMLElement;
     onMounted(): void;
 }
 
-export class EditorContent implements EditorElement {
+export class EditorContent implements EditorComponent {
     public readonly element: HTMLDivElement;
-    constructor(parent: HTMLElement) {
+    public readonly context: YangEditor;
+
+    constructor(editor: YangEditor) {
         this.element = document.createElement("div");
+        this.context = editor;
+    }
+
+    onMount(): HTMLElement {
         this.element.classList.add("yang-editor-content");
         this.element.contentEditable = "true";
-        parent.appendChild(this.element);
 
+        const observer = new MutationObserver((mutations) => {
+            let childNodes = this.element.childNodes;
+            let modifiedNodes = new Array<Node>();
+            for(let node of childNodes) {
+                if(node.nodeType === Node.TEXT_NODE) {
+                    let p = document.createElement("p");
+                    p.innerText = node.textContent || "";
+                    node.replaceWith(p);
+                }
+            }
+
+        });
+
+        // 开始观察
+        observer.observe(this.element, {
+            childList: true,     // 观察直接子节点的变动
+            subtree: true,       // 观察所有后代节点的变动
+            characterData: true, // 观察节点内容或文本的变动
+            attributes: true,    // 观察属性的变动
+            attributeFilter: ['style', 'class'] // 只观察特定属性
+        });
+        return this.element;
+    }
+    onMounted(): void {
+        throw new Error("Method not implemented.");
     }
 
     getElement(): HTMLElement {
@@ -67,10 +97,16 @@ function boldSelection() {
     }
 }
 
-export class EditorToolbar implements EditorElement {
+
+export class EditorToolbar implements EditorComponent {
     public readonly element: HTMLDivElement;
-    constructor(parent: HTMLElement) {
+    public readonly context: YangEditor;
+    constructor(editor: YangEditor) {
+        this.context = editor;
         this.element = document.createElement("div");
+    }
+
+    onMount(): HTMLElement {
         this.element.classList.add("yang-editor-toolbar");
 
         let button = document.createElement("button");
@@ -81,17 +117,32 @@ export class EditorToolbar implements EditorElement {
         }
         this.element.appendChild(button);
 
-        parent.appendChild(this.element);
+        let button2 = document.createElement("button");
+        button2.classList.add("yang-editor-toolbar-button");
+        button2.innerText = "Z";
+        button2.onclick = (e: MouseEvent) => {
+            this.insertCollapse();
+        }
+        this.element.appendChild(button2);
 
+        return this.element;
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
     }
 
     getElement(): HTMLElement {
         return this.element;
     }
+
+    insertCollapse() {
+        this.context
+    }
 }
 
 export class EditorParagraph implements EditorComponent {
-    public  element: HTMLParagraphElement | undefined;
+    public  element: HTMLParagraphElement;
     public  text: HTMLDivElement | undefined;
     private enterCount: number = 0;
     private str: string = ""
@@ -99,6 +150,7 @@ export class EditorParagraph implements EditorComponent {
     private focusTail: boolean = false;
 
     constructor(str?: string, focus?: boolean) {
+        this.element = document.createElement("p");
         if(str !== undefined) {
             this.str = str;
         }
@@ -129,9 +181,8 @@ export class EditorParagraph implements EditorComponent {
     }
 
     onMount() : HTMLElement {
-        let element = document.createElement("p");
-        element.classList.add("yang-editor-paragraph");
-        element.contentEditable = "false";
+        this.element.classList.add("yang-editor-paragraph");
+        this.element.contentEditable = "false";
         // this.element.tabIndex = 0;
         // this.element.addEventListener('focus', function(){
         //     this.classList.add('yang-editor-paragraph-focused');
@@ -143,15 +194,15 @@ export class EditorParagraph implements EditorComponent {
         // FIXME: fix focus
         let text = document.createElement("div");
         text.innerHTML = this.str;
-        element.appendChild(text);
+        this.element.appendChild(text);
 
         let deleteButton = document.createElement("button");
         deleteButton.classList.add("yang-editor-paragraph-delete");
         deleteButton.innerText = "Delete";
-        deleteButton.onclick = () => {globalEventCenter.emit<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, {
-            sourceComponent: this,
-        })};
-        element.appendChild(deleteButton);
+        // deleteButton.onclick = () => {globalEventCenter.emit<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, {
+        //     sourceComponent: this,
+        // })};
+        this.element.appendChild(deleteButton);
 
         const events = ['input', 'paste', 'cut', 'keydown', 'compositionend'];
         events.forEach(event => {
@@ -191,9 +242,9 @@ export class EditorParagraph implements EditorComponent {
         text.addEventListener ("keydown", (event: KeyboardEvent) => {
             if(event.key === "Backspace") {
                 if (text.innerText.trim() === "") {
-                    globalEventCenter.emit<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, {
-                        sourceComponent: this,
-                    })
+                    // globalEventCenter.emit<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, {
+                    //     sourceComponent: this,
+                    // })
                     event.stopPropagation();
                     event.preventDefault()
                 }
@@ -216,11 +267,11 @@ export class EditorParagraph implements EditorComponent {
                             let leftString =  text.innerHTML.trim();
                             let rightString = "";
 
-                            globalEventCenter.emit<SplitParagraphData>(Constants.EV_SPLIT_PARAGRAPH, {
-                                sourceComponent: this,
-                                leftText: leftString,
-                                rightText: rightString,
-                            });
+                            // globalEventCenter.emit<SplitParagraphData>(Constants.EV_SPLIT_PARAGRAPH, {
+                            //     sourceComponent: this,
+                            //     leftText: leftString,
+                            //     rightText: rightString,
+                            // });
                         }
 
                     }
@@ -233,12 +284,11 @@ export class EditorParagraph implements EditorComponent {
         text.classList.add("yang-editor-paragraph-text");
         text.contentEditable = "true";
 
-        this.element = element;
         this.text = text;
         return this.element;
     }
 
-    getElement(): HTMLElement | undefined {
+    getElement(): HTMLElement  {
         return this.element;
     }
 }

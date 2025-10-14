@@ -34,16 +34,19 @@
     cursor: pointer;
 }
 
-.yang-editor .yang-editor-paragraph {
-    border: 1px solid transparent;
+.yang-editor .yang-editor-content > p,
+.yang-editor .yang-editor-content > div {
+    border-left: 4px solid transparent;
     padding: 4px;
     position: relative;
 }
 
-.yang-editor .yang-editor-paragraph:hover {
+.yang-editor .yang-editor-content > p:hover,
+.yang-editor .yang-editor-content > div:hover {
     border-left: 4px solid #dedede;
     border-radius: 4px;
 }
+
 
 
 .yang-editor .yang-editor-paragraph .yang-editor-paragraph-text{
