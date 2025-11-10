@@ -5,6 +5,10 @@ import {Constants, DeleteParagraphData, SplitParagraphData} from "./common";
 
 export interface YangEditorOptions {
     elem: string;
+    images: {
+        add: String,
+        menu: String,
+    }
 }
 
 export class YangEditor {
@@ -15,7 +19,7 @@ export class YangEditor {
 
     private components: Array<EditorComponent> = new Array<EditorComponent>();
 
-    constructor(private options: YangEditorOptions) {
+    constructor(public options: YangEditorOptions) {
         let element = document.getElementById(options.elem);
         if(element === null ) {
             throw new Error(`Invalid Yang Editor option "${options.elem}"`);

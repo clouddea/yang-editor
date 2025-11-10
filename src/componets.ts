@@ -97,6 +97,40 @@ function boldSelection() {
     }
 }
 
+class ButtonAdd implements EditorComponent {
+    public readonly element: HTMLButtonElement;
+    public readonly context: YangEditor;
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("button");
+        this.element.innerText = "";
+        this.element.style.width = "16px";
+        this.element.style.height = "16px";
+        this.element.style.height = "16px";
+        this.element.style.backgroundImage = `url(${this.context.options.images.add})`;
+        this.element.style.backgroundSize = "contain";
+        this.element.style.backgroundRepeat = "no-repeat";
+        this.element.onclick = () => {
+            const url = prompt("Enter image URL");
+            // if (url) {
+            //     this.context.content.insertImage(url);
+            // }
+        };
+    }
+
+    onMount(): HTMLElement {
+        return this.element;
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+}
 
 export class EditorToolbar implements EditorComponent {
     public readonly element: HTMLDivElement;
@@ -109,6 +143,7 @@ export class EditorToolbar implements EditorComponent {
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-toolbar");
+        this.element.appendChild(new ButtonAdd(this.context).onMount());
 
         let button = document.createElement("button");
         button.classList.add("yang-editor-toolbar-button");

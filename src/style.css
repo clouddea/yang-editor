@@ -5,7 +5,8 @@
 }
 
 .yang-editor p,
-.yang-editor div{
+.yang-editor div,
+.yang-editor button {
     margin: 0;
     padding: 0;
     border: none;
@@ -26,6 +27,8 @@
     line-height: 24px;
     user-select: none;
     padding: 0 4px;
+    display: flex;
+    align-items: center;
 }
 
 .yang-editor .yang-editor-toolbar-button {
@@ -36,17 +39,36 @@
 
 .yang-editor .yang-editor-content > p,
 .yang-editor .yang-editor-content > div {
-    border-left: 4px solid transparent;
+    border-left: 16px solid transparent;
     padding: 4px;
     position: relative;
 }
 
+.yang-editor .yang-editor-content > p::before,
+.yang-editor .yang-editor-content > div::before { 
+    content: '';
+    width: 16px;
+    height: 16px;
+    display: none;
+    background-color: transparent;
+    background-image: url('./images/menu@2x.png');
+    background-size: 100% 100%;
+    position: absolute;
+    left: -16px;
+    top: 6px;
+    cursor: pointer;
+}
+
 .yang-editor .yang-editor-content > p:hover,
 .yang-editor .yang-editor-content > div:hover {
-    border-left: 4px solid #dedede;
+    border-left: 16px solid transparent;
     border-radius: 4px;
 }
 
+.yang-editor .yang-editor-content > p:hover::before,
+.yang-editor .yang-editor-content > div:hover::before {
+    display: block;
+}
 
 
 .yang-editor .yang-editor-paragraph .yang-editor-paragraph-text{

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import YangEditor from "yang-editor";
 import './Editor.css';
 import 'yang-editor/src/style.css';
+import addIcon from './images/add@2x.png';
+import menuIcon from './images/menu@2x.png';
 
 const Editor = function () {
 
@@ -11,6 +13,10 @@ const Editor = function () {
         if(!inited){
             YangEditor.create({
                 elem: 'editor',
+                images: {
+                    add: addIcon,
+                    menu: menuIcon
+                }
             });
             setInited(true);
         }
