@@ -111,6 +111,7 @@ class ButtonAdd implements EditorComponent {
         this.element.style.backgroundImage = `url(${this.context.options.images.add})`;
         this.element.style.backgroundSize = "contain";
         this.element.style.backgroundRepeat = "no-repeat";
+        this.element.style.cursor = "pointer";
         this.element.onclick = () => {
             const url = prompt("Enter image URL");
             // if (url) {
@@ -120,6 +121,42 @@ class ButtonAdd implements EditorComponent {
     }
 
     onMount(): HTMLElement {
+        return this.element;
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+}
+
+class ColorStrip implements EditorComponent {
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+    public readonly colors: Array<string>;
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("div");
+        this.colors = ["rgba(228, 73, 91, 1)", "rgba(255, 140, 0, 1)", "rgba(255, 215, 0, 1)", "rgba(34, 139, 34, 1)", "rgba(30, 144, 255, 1)", "rgba(138, 43, 226, 1)", "rgba(255, 20, 147, 1)"];
+    }
+
+    onMount(): HTMLElement {
+        this.element.classList.add("yang-editor-color-strip");
+        this.element.style.display = "flex";
+        this.element.style.alignItems = "center";
+        for(let color of this.colors) {
+            let btn = document.createElement("button");
+            btn.style.backgroundColor = color;
+            btn.style.width = "16px";
+            btn.style.height = "16px";
+            btn.style.borderRadius = "50%";
+            btn.style.cursor = "pointer";
+            this.element.appendChild(btn);
+        }
         return this.element;
     }
 
@@ -144,6 +181,7 @@ export class EditorToolbar implements EditorComponent {
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-toolbar");
         this.element.appendChild(new ButtonAdd(this.context).onMount());
+        this.element.appendChild(new ColorStrip(this.context).onMount());
 
         let button = document.createElement("button");
         button.classList.add("yang-editor-toolbar-button");
