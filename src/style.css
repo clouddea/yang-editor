@@ -1,6 +1,7 @@
 .yang-editor {
-    background: #eae9e9;
-    padding: 0 10px;
+    background: white;
+    border: 1px solid rgba(235, 235, 235, 1);
+    padding: 0;
     text-align: left;
 }
 
@@ -17,18 +18,20 @@
 
 .yang-editor .yang-editor-content {
     background: white;
+    min-height: 100px;
     outline: none;
     padding: 4px;
+    overflow: auto;
 }
 
 .yang-editor .yang-editor-toolbar {
-    background: yellow;
-    height: 24px;
+    background: transparent;
     line-height: 24px;
     user-select: none;
-    padding: 0 4px;
+    padding: 8px 16px;
     display: flex;
     align-items: center;
+    border-bottom: 1px solid rgba(235, 235, 235, 1);
 }
 
 .yang-editor .yang-editor-toolbar-button {
@@ -42,6 +45,7 @@
     border-left: 16px solid transparent;
     padding: 4px;
     position: relative;
+    min-height: 31px;
 }
 
 .yang-editor .yang-editor-content > p::before,
@@ -51,7 +55,7 @@
     height: 16px;
     display: none;
     background-color: transparent;
-    background-image: url('./images/menu@2x.png');
+    background-image: url('./images/menu2.svg');
     background-size: 100% 100%;
     position: absolute;
     left: -16px;
@@ -70,28 +74,101 @@
     display: block;
 }
 
-
-.yang-editor .yang-editor-paragraph .yang-editor-paragraph-text{
-    width: 100%;
-    /*border: 1px solid blue;*/
+.yang-editor .yang-editor-content:focus {
+    /* background-color: red !important; */
 }
 
-.yang-editor .yang-editor-paragraph .yang-editor-paragraph-delete {
-    position: absolute;
-    right: 4px;
-    top: 4px;
-    cursor: pointer;
-    padding: 2px 4px;
+
+
+.yang-editor .yang-editor-color-strip {
+    padding-left: 19px;
+}
+
+.yang-editor .yang-editor-color-strip button {
+    margin-left: 8px;
+}
+
+.yang-editor .yang-editor-color-strip button:first-child {
+    margin-left: 0;
+}
+
+.yang-editor .yang-editor-icon-button {
+    margin-left: 4px;
+}
+
+.yang-editor .yang-editor-icon-button:nth-of-type(2){
+    margin-left: 16px;
+}
+
+.yang-editor .yang-editor-collapse-container {
+    border: 1px solid rgba(235, 235, 235, 1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.yang-editor .yang-editor-collapse-container:hover {
+    border: 1px solid #81bbf8
+}
+
+.yang-editor .yang-editor-collapse-header { 
+    border-bottom: 1px solid rgba(235, 235, 235, 1);
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+}
+
+.yang-editor .yang-editor-collapse-header.collapsed {
+    border-bottom: 0px solid transparent;
+}
+
+.yang-editor .yang-editor-collapse-title {
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0px;
+    line-height: 21.72px;
+    color: rgba(0, 0, 0, 1);
+    text-align: left;
+    padding: 0 10px;
+    flex-shrink: 1;
+    flex-grow: 1;
+}
+
+.yang-editor .yang-editor-collapse-body {
+    padding: 12px 16px;
+    min-height: 64px;
+}
+
+.yang-editor .yang-editor-collapse-body.collapsed {
     display: none;
 }
 
-.yang-editor .yang-editor-paragraph:hover .yang-editor-paragraph-delete{
-   display: block;
+.yang-editor .yang-editor-collapse-button {
+    background-color: transparent;
+    flex-shrink: 0;
+}
+
+.yang-editor .yang-editor-collapse-button:hover {
+    background-color: rgba(231, 233, 232, 1);
+}
+
+.yang-editor .yang-editor-collapse-button.collapsed {
+    transform: rotate(-90deg);
 }
 
 
 
 
+.yang-editor a,
+.yang-editor a:hover,
+.yang-editor a:active,
+.yang-editor a:visited {
+    color: rgba(17, 124, 238, 1);
+    cursor: pointer;
+    text-decoration: none;
+}
+.yang-editor a:hover {
+    background-color: #5FA8F633;
+}
 
 
 

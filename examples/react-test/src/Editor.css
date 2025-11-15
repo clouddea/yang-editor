@@ -1,9 +1,6 @@
 
 .components-editor {
-    width: 800px;
-    height: 600px;
     box-sizing: border-box;
-    border: 1px solid red;
     margin: 12px auto 0;
 }
 
