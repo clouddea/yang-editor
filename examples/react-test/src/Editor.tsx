@@ -12,6 +12,9 @@ import deletelineIcon from './images/deleteline@2x.png';
 import linkIcon from './images/link@2x.png';
 import clearIcon from './images/clear@2x.png';
 import downIcon from './images/down@2x.png';
+import deleteIcon from './images/delete@2x.png';
+import copyIcon from './images/copy@2x.png';
+import cutIcon from './images/cut@2x.png';
 
 const Editor = function () {
 
@@ -22,7 +25,7 @@ const Editor = function () {
             YangEditor.create({
                 elem: 'editor',
                 width: '800px',
-                height: '200px',
+                height: 'auto',
                 images: {
                     add: addIcon,
                     menu: menu2Icon,
@@ -32,7 +35,10 @@ const Editor = function () {
                     deleteline: deletelineIcon,
                     link: linkIcon,
                     clear: clearIcon,
-                    down: downIcon
+                    down: downIcon,
+                    delete: deleteIcon,
+                    copy: copyIcon,
+                    cut: cutIcon,
                 }
             });
             setInited(true);

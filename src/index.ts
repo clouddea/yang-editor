@@ -1,4 +1,4 @@
-import {EditorComponent, EditorContent, EditorParagraph, EditorToolbar} from "./componets";
+import {EditorBody, EditorComponent, EditorContent, EditorParagraph, EditorParagraphMenu, EditorToolbar} from "./componets";
 import { SelectionUtils } from "./utils";
 
 export interface YangEditorOptions {
@@ -14,7 +14,10 @@ export interface YangEditorOptions {
         deleteline: string,
         link: string,
         clear: string,
-        down: string
+        down: string,
+        delete: string,
+        copy: string,
+        cut: string,
     }
 }
 
@@ -22,7 +25,7 @@ export class YangEditor {
 
     public readonly element: HTMLElement;
     public readonly toolbar: EditorToolbar;
-    public readonly content: EditorContent;
+    public readonly body: EditorBody;
     public readonly selectionUtils: SelectionUtils;
 
     private components: Array<EditorComponent> = new Array<EditorComponent>();
@@ -34,7 +37,7 @@ export class YangEditor {
         }
         this.element = element;
         this.toolbar = new EditorToolbar(this);
-        this.content = new EditorContent(this);
+        this.body = new EditorBody(this);
         this.selectionUtils = new SelectionUtils(this.element);
     }
 
@@ -45,7 +48,7 @@ export class YangEditor {
         this.element.innerHTML = "";
         // add components
         this.element.appendChild(this.toolbar.onMount());
-        this.element.appendChild(this.content.onMount());
+        this.element.appendChild(this.body.onMount());
     }
 
 }

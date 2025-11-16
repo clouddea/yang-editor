@@ -9,6 +9,37 @@ export interface EditorComponent extends EditorElement {
     onMounted(): void;
 }
 
+export class EditorBody implements EditorComponent {
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+    public readonly content: EditorContent;
+    public readonly menuButton: ContentBeforeMenu;
+
+    constructor(editor: YangEditor) {
+        this.element = document.createElement("div");
+        this.context = editor;
+        this.content = new EditorContent(this.context);
+        this.menuButton = new ContentBeforeMenu(this.context);
+    }
+
+    onMount(): HTMLElement {
+        this.element.classList.add("yang-editor-body");
+        this.element.appendChild(this.content.onMount());
+        this.element.appendChild(this.menuButton.onMount());
+        this.element.style.height = this.context.options.height;
+        return this.element;
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+}
+
 export class EditorContent implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
@@ -22,7 +53,6 @@ export class EditorContent implements EditorComponent {
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-content");
-        this.element.style.height = this.context.options.height;
         this.element.contentEditable = "true";
 
         const observer = new MutationObserver((mutations) => {
@@ -69,6 +99,19 @@ export class EditorContent implements EditorComponent {
                 }
             }
 
+            // add mousemove and mouseleave event to every child nodes
+            for(let node of this.element.children) {
+                if(node.nodeType === Node.ELEMENT_NODE) {
+                    let elem = node as HTMLElement;
+                    elem.onmousemove = () => {
+                        this.context.body.menuButton.show(elem);
+                    };
+                    elem.onmouseleave = () => {
+                        this.context.body.menuButton.hide();
+                    };
+                }
+            }
+
         });
 
         // 开始观察
@@ -90,6 +133,20 @@ export class EditorContent implements EditorComponent {
         this.element.appendChild(document.createElement('p'));
     }
 
+    insertCollapse() {
+        let paragraphElement = this.context.selectionUtils.getSelectedParagraph(); 
+        if(paragraphElement?.innerText.trim() === "") {
+            paragraphElement.replaceWith(new EditorCollapse(this.context).onMount());
+        } else {
+            for(let child of this.element.children) {
+                if(child === paragraphElement) {
+                    child.after(new EditorCollapse(this.context).onMount());
+                    break;
+                }
+            }
+        }
+    }
+
     onMounted(): void {
         throw new Error("Method not implemented.");
     }
@@ -100,6 +157,56 @@ export class EditorContent implements EditorComponent {
 
 }
 
+class ContentBeforeMenu implements EditorComponent { 
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+    public readonly sideMenu: EditorParagraphMenu;
+    private target: HTMLElement | undefined;
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("div");
+        this.sideMenu = new EditorParagraphMenu(this.context);
+    }
+
+    onMount(): HTMLElement {
+        this.element.classList.add("yang-editor-content-before-menu");
+
+
+        let button = document.createElement("button");
+        button.classList.add("yang-editor-content-before-menu-button");
+
+        this.element.onclick = () => this.sideMenu.show(this.target);
+        this.element.onmouseenter = () => this.show(this.target);
+        this.element.appendChild(button);
+        this.element.appendChild(this.sideMenu.onMount());
+        return this.element;
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+    show(target?: HTMLElement) {
+        this.element.style.display = "flex";
+        if(target !== this.target) {
+            this.sideMenu.hide();
+        }
+        if(target) {
+            this.target = target;
+            this.element.style.left = `24px`;
+            this.element.style.top = target.offsetTop + `px`;
+        }
+    }
+
+    hide() {
+        this.element.style.display = "none";
+    }
+}
 
 class ButtonAdd implements EditorComponent {
     public readonly element: HTMLButtonElement;
@@ -117,7 +224,8 @@ class ButtonAdd implements EditorComponent {
         this.element.style.backgroundRepeat = "no-repeat";
         this.element.style.cursor = "pointer";
         this.element.title = "Add Collapsed Panel";
-        this.element.onclick = this.insertCollapse.bind(this);
+        this.element.onclick = () => this.context.body.content.insertCollapse();
+
     }
 
     onMount(): HTMLElement {
@@ -132,16 +240,6 @@ class ButtonAdd implements EditorComponent {
         return this.element;
     }
 
-
-    insertCollapse() {
-        let paragraphElement = this.context.selectionUtils.getSelectedParagraph(); 
-        for(let child of this.context.content.getElement().children) {
-            if(child === paragraphElement) {
-                child.after(new EditorCollapse(this.context).onMount());
-                break;
-            }
-        }
-    }
 }
 
 class ColorStrip implements EditorComponent {
@@ -423,6 +521,90 @@ export class EditorCollapse implements EditorComponent {
         throw new Error("Method not implemented.");
     }
 
+}
+
+export class EditorParagraphMenu implements EditorComponent {
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+    private target: HTMLElement | undefined;
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("div");
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+    onMount(): HTMLElement {
+        this.element.classList.add("yang-editor-paragraph-menu");
+        let ul = document.createElement("ul");
+        let lis = new Array<HTMLLIElement>();
+        let images = [this.context.options.images.delete, this.context.options.images.copy, this.context.options.images.cut];
+        let texts = ["Delete", "Copy", "Cut"];
+
+        for(let i = 0; i < images.length; i++) {
+            let li = document.createElement("li");
+            let icon = document.createElement("button");
+            let text = document.createElement("p");
+            li.classList.add("yang-editor-paragraph-menu-item");
+            icon.classList.add("yang-editor-paragraph-menu-item-icon");
+            text.classList.add("yang-editor-paragraph-menu-item-text");
+            let title = texts[i];
+            if(title !== undefined) {
+                icon.style.backgroundImage = `url(${images[i]})`;
+                icon.style.backgroundSize = "16px 16px";
+                icon.style.backgroundRepeat = "no-repeat";
+                icon.style.backgroundPosition = "center";
+                icon.style.width = "20px";
+                icon.style.height = "20px";
+                icon.style.cursor = "pointer";
+                icon.style.border = "none";
+                icon.style.outline = "none";
+                li.style.display = "flex";
+                li.style.alignItems = "center";
+                text.innerText = title;
+                li.appendChild(icon);
+                li.appendChild(text);
+            }
+            ul.appendChild(li);
+            lis.push(li);
+        }
+
+        if (lis[0]) {
+            lis[0].onclick = this.delete.bind(this);
+        }
+
+        this.element.onmouseleave = this.hide.bind(this);
+
+        this.element.appendChild(ul);
+        return this.getElement();
+    }
+
+
+    hide() {
+        this.element.style.display = "none";
+    }
+
+    show(target?: HTMLElement) {
+        this.element.style.display = "block";
+        if(target) {
+            this.target = target;
+        }
+    }
+
+    delete(ev: MouseEvent) {
+        if(this.target !== undefined) {
+            this.target.remove();
+            this.hide();
+            ev.stopPropagation();
+        }
+    }
 }
 
 export class EditorParagraph implements EditorComponent {

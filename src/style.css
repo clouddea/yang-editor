@@ -3,25 +3,33 @@
     border: 1px solid rgba(235, 235, 235, 1);
     padding: 0;
     text-align: left;
+    position: relative;
 }
 
 .yang-editor p,
 .yang-editor div,
-.yang-editor button {
+.yang-editor button,
+.yang-editor ul,
+.yang-editor li {
     margin: 0;
     padding: 0;
     border: none;
     outline: none;
     box-sizing: border-box;
     display: block;
+    list-style: none;
+}
+
+.yang-editor .yang-editor-body {
+    position: relative;
+    min-height: 100px;
+    padding: 4px;
+    outline: none;
+    overflow: auto;
 }
 
 .yang-editor .yang-editor-content {
     background: white;
-    min-height: 100px;
-    outline: none;
-    padding: 4px;
-    overflow: auto;
 }
 
 .yang-editor .yang-editor-toolbar {
@@ -42,37 +50,20 @@
 
 .yang-editor .yang-editor-content > p,
 .yang-editor .yang-editor-content > div {
-    border-left: 16px solid transparent;
+    border-left: 44px solid transparent;
+    border-right: 44px solid transparent;
     padding: 4px;
     position: relative;
     min-height: 31px;
 }
 
-.yang-editor .yang-editor-content > p::before,
-.yang-editor .yang-editor-content > div::before { 
-    content: '';
-    width: 16px;
-    height: 16px;
-    display: none;
-    background-color: transparent;
-    background-image: url('./images/menu2.svg');
-    background-size: 100% 100%;
-    position: absolute;
-    left: -16px;
-    top: 6px;
-    cursor: pointer;
-}
-
 .yang-editor .yang-editor-content > p:hover,
 .yang-editor .yang-editor-content > div:hover {
-    border-left: 16px solid transparent;
+    border-left: 44px solid transparent;
     border-radius: 4px;
 }
 
-.yang-editor .yang-editor-content > p:hover::before,
-.yang-editor .yang-editor-content > div:hover::before {
-    display: block;
-}
+
 
 .yang-editor .yang-editor-content:focus {
     /* background-color: red !important; */
@@ -155,9 +146,6 @@
     transform: rotate(-90deg);
 }
 
-
-
-
 .yang-editor a,
 .yang-editor a:hover,
 .yang-editor a:active,
@@ -171,4 +159,68 @@
 }
 
 
+
+.yang-editor .yang-editor-paragraph-menu {
+    width: 180px;
+    padding: 4px 8px;
+    opacity: 1;
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(217, 217, 217, 1);
+    box-shadow: 1px 1px 5px  rgba(217, 217, 217, 0.3);
+    border-radius: 6px;
+    position: absolute;
+    left: 0;
+    top: 31px;
+    display: none;
+}
+
+.yang-editor .yang-editor-paragraph-menu-item {
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.yang-editor .yang-editor-paragraph-menu-item:hover {
+    background: rgba(239, 240, 240, 1);
+}
+
+.yang-editor .yang-editor-paragraph-menu-item-icon {
+    flex-shrink: 0;
+    background: transparent;
+    margin-right: 8px;
+}
+
+.yang-editor .yang-editor-paragraph-menu-item-text {
+    flex-shrink: 1;
+    flex-grow: 1;
+}
+
+.yang-editor .yang-editor-content-before-menu {
+    position: absolute;
+    width: 24px;
+    height: 31px;
+    left: 24px;
+    top: 0px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.yang-editor .yang-editor-content-before-menu-button{ 
+    width: 24px;
+    height: 24px;
+    /* display: none; */
+    background-color: transparent;
+    background-image: url('./images/menu2.svg');
+    background-size: 16px 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: block;
+    cursor: pointer;
+}
+
+.yang-editor .yang-editor-content-before-menu-button:hover { 
+    background-color: #eff0f0;
+    border-radius: 6px;
+}
 
