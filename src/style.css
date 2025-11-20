@@ -22,7 +22,6 @@
 
 .yang-editor .yang-editor-body {
     position: relative;
-    min-height: 100px;
     padding: 4px;
     outline: none;
     overflow: auto;
@@ -30,6 +29,8 @@
 
 .yang-editor .yang-editor-content {
     background: white;
+    height: 100%;
+    min-height: 100px;
 }
 
 .yang-editor .yang-editor-toolbar {
@@ -98,7 +99,7 @@
 }
 
 .yang-editor .yang-editor-collapse-container:hover {
-    border: 1px solid #81bbf8
+    border: 1px solid #81bbf8 !important;
 }
 
 .yang-editor .yang-editor-collapse-header { 
@@ -130,16 +131,26 @@
 }
 
 .yang-editor .yang-editor-collapse-body.collapsed {
-    display: none;
+    height: 0px;
+    min-height: 0px;
+    overflow: hidden;
+    padding: 0 0;
 }
 
 .yang-editor .yang-editor-collapse-button {
     background-color: transparent;
     flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    border-radius: 3px;
 }
 
 .yang-editor .yang-editor-collapse-button:hover {
-    background-color: rgba(231, 233, 232, 1);
+    background-color: rgba(231, 233, 232, 1) !important;
 }
 
 .yang-editor .yang-editor-collapse-button.collapsed {

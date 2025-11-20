@@ -44,8 +44,6 @@ export class EditorContent implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
 
-    static PARAGRAPH_STYLE = "yang-editor-paragraph";
-
     constructor(editor: YangEditor) {
         this.element = document.createElement("div");
         this.context = editor;
@@ -56,14 +54,8 @@ export class EditorContent implements EditorComponent {
         this.element.contentEditable = "true";
 
         const observer = new MutationObserver((mutations) => {
-            console.log("change")
             let childNodes = this.element.childNodes;
-            if(childNodes.length === 0) {
-                this.insertDefaultParagraph();
-                return;
-            }
-            let modifiedNodes = new Array<Node>();
-            // transform text nodes to paragraphs
+            // transform text nodes or non-paragraph elements to paragraphs
             for(let node of childNodes) {
                 if(node.nodeType === Node.TEXT_NODE) {
                     let p = document.createElement("p");
@@ -81,20 +73,17 @@ export class EditorContent implements EditorComponent {
             }
 
             // insert empty paragraph
-            if(this.element.children.length > 0)  {
-                let lastElement = this.element.children[this.element.children.length - 1];
-                if (lastElement && lastElement?.childNodes.length > 0) {
-                    let p = document.createElement("p");
-                    this.element.appendChild(p);
-                }
+            let lastElement = this.element.children[this.element.children.length - 1];
+            if (lastElement === undefined || lastElement.childNodes.length > 0) {
+                this.insertDefaultParagraph();
             }
 
             // tag every childnodes
             for(let node of this.element.children) {
                 if(node.nodeType === Node.ELEMENT_NODE) {
                     let elem = node as HTMLElement;
-                    if(!elem.classList.contains(EditorContent.PARAGRAPH_STYLE)) {
-                        elem.classList.add(EditorContent.PARAGRAPH_STYLE);
+                    if(!elem.classList.contains(ComponentFactory.PARAGRAPH_STYLE)) {
+                        elem.classList.add(ComponentFactory.PARAGRAPH_STYLE);
                     }
                 }
             }
@@ -112,6 +101,18 @@ export class EditorContent implements EditorComponent {
                 }
             }
 
+            // activate all components
+            for(let node of this.element.children) {
+                if(node.nodeType === Node.ELEMENT_NODE) {
+                    for (let className of node.classList) {
+                        if (ComponentFactory.STYLES.indexOf(className) !== -1) {
+                            this.context.componentFactory.createComponent(className, node as HTMLElement).onMount();
+                            break;
+                        }
+                    }
+                }
+            }
+
         });
 
         // 开始观察
@@ -123,6 +124,36 @@ export class EditorContent implements EditorComponent {
             // attributeFilter: ['style', 'class'] // 只观察特定属性
         });
 
+        this.element.oncopy = (e) => {
+            // TODO: handle copy event
+            // e.preventDefault();
+            // let selection = window.getSelection();
+            // if (selection) {
+            //     let range = selection.getRangeAt(0);
+            //     let cloned = range.cloneContents();
+            //     // console.log(cloned);
+            //     // console.log(e.clipboardData)
+            //     // console.log(e.clipboardData?.getData("text/html"));
+            //     // e.clipboardData?.setData("text/html", cloned.innerHTML);
+            // }
+        }
+
+        this.element.onpaste = (e) => {
+            // TODO: handle paste event
+            //e.preventDefault();
+            // let clipboardData = e.clipboardData;
+            // if (clipboardData) {
+            //     let html = clipboardData.getData("text/html");
+            //     let text = clipboardData.getData("text/plain");
+            //     if (html) {
+            //         let div = document.createElement("div");
+            //         div.innerHTML = html;
+            //         this.element.appendChild(div);
+            //     } else if (text) {
+            //         this.element.appendChild(document.createTextNode(text));
+            //     }
+            // }
+        }
 
         this.insertDefaultParagraph();
 
@@ -271,7 +302,7 @@ class ColorStrip implements EditorComponent {
                 btn.style.cursor = "pointer";
                 btn.title = title;
                 btn.onclick = () => {
-                    document.execCommand('foreColor', false, color);
+                    document.execCommand('backColor', false, color);
                     this.context.selectionUtils.getSelectionRange()?.collapse();
                     // eqauls to: 
                     // document.execCommand('styleWithCSS', false, true);
@@ -435,7 +466,9 @@ export class EditorToolbar implements EditorComponent {
 }
 
 export class EditorCollapse implements EditorComponent {
-    public readonly element: HTMLDivElement;
+
+    public static readonly COLLAPSE_STYLE = "collapsed";
+    public readonly element: HTMLElement;
     public readonly context: YangEditor;
     title: HTMLDivElement;
     header: HTMLDivElement;
@@ -443,17 +476,45 @@ export class EditorCollapse implements EditorComponent {
     body: HTMLDivElement;
     container: HTMLDivElement;
 
-    collapsed: boolean = false;
-
-    constructor(editor: YangEditor) {
+    constructor(editor: YangEditor, element?: HTMLElement) {
         this.context = editor;
-        this.element = document.createElement("div");
-        this.container = document.createElement('div');
-        this.header = document.createElement('div');
-        this.body = document.createElement('div');
-        this.button = document.createElement('button');
-        this.title = document.createElement('div');
+        if(element) {
+            this.element = element;
+            this.container = element.querySelector('.yang-editor-collapse-container') as HTMLDivElement;
+            this.header = element.querySelector('.yang-editor-collapse-header') as HTMLDivElement;
+            this.body = element.querySelector('.yang-editor-collapse-body') as HTMLDivElement;
+            this.button = element.querySelector('.yang-editor-collapse-button') as HTMLButtonElement;
+            this.title = element.querySelector('.yang-editor-collapse-title') as HTMLDivElement;
+        } else {
+            this.element = document.createElement("div");
+            this.container = document.createElement('div');
+            this.header = document.createElement('div');
+            this.body = document.createElement('div');
+            this.button = document.createElement('button');
+            this.title = document.createElement('div');
 
+            this.element.classList.add(ComponentFactory.COLLAPSE_STYLE)
+            this.container.classList.add("yang-editor-collapse-container");
+            this.header.classList.add("yang-editor-collapse-header");
+            this.body.classList.add("yang-editor-collapse-body");
+            this.button.classList.add("yang-editor-collapse-button");
+            this.title.classList.add("yang-editor-collapse-title");
+            this.title.innerText = "折叠面板标题";
+
+            this.button.innerText = "";
+
+            this.header.appendChild(this.button);
+            this.header.appendChild(this.title);
+            this.container.appendChild(this.header);
+            this.container.appendChild(this.body);
+            this.element.appendChild(this.container);
+
+            this.container.contentEditable = "false";
+            this.title.contentEditable = "true";
+            this.body.contentEditable = "true";
+
+            this.button.style.backgroundImage = `url(${this.context.options.images.down})`;
+        }
     }
 
     getElement(): HTMLElement {
@@ -461,59 +522,35 @@ export class EditorCollapse implements EditorComponent {
     }
 
     onMount(): HTMLElement {
-
-        let container = this.container;
-        let header = this.header;
-        let body = this.body;
-        let button = this.button;
-        let title = this.title;
-
-        container.classList.add("yang-editor-collapse-container");
-        header.classList.add("yang-editor-collapse-header");
-        body.classList.add("yang-editor-collapse-body");
-        button.classList.add("yang-editor-collapse-button");
-        title.classList.add("yang-editor-collapse-title");
-        title.innerText = "折叠面板标题";
-        
-        button.innerText = "";
-
-        header.appendChild(button);
-        header.appendChild(title);
-        container.appendChild(header);
-        container.appendChild(body);
-        this.element.appendChild(container);
-
-        container.contentEditable = "false";
-        title.contentEditable = "true";
-        body.contentEditable = "true";
-        
-
-        button.style.width = "20px";
-        button.style.height = "20px";
-        button.style.backgroundImage = `url(${this.context.options.images.down})`;
-        button.style.backgroundSize = "16px 16px";
-        button.style.backgroundRepeat = "no-repeat";
-        button.style.backgroundPosition = "center";
-        button.style.cursor = "pointer";
-        button.style.borderRadius = "3px"
-        button.onclick = () => {
-            this.collapsed = !this.collapsed;
+        this.button.onclick = () => {
+            this.switchState();
             this.renderState();
         }
-
         this.renderState();
         return this.getElement();
     }
 
-    renderState() {
-        if(this.collapsed) {
-            this.button.classList.add("collapsed");
-            this.body.classList.add("collapsed");
-            this.header.classList.add("collapsed");
+    switchState() {
+        if(this.element.classList.contains(EditorCollapse.COLLAPSE_STYLE)) {
+            this.element.classList.remove(EditorCollapse.COLLAPSE_STYLE)
         } else {
-            this.button.classList.remove("collapsed");
-            this.body.classList.remove("collapsed");
-            this.header.classList.remove("collapsed");
+            this.element.classList.add(EditorCollapse.COLLAPSE_STYLE);
+        }
+    }
+
+    isCollapsed() {
+        return this.element.classList.contains(EditorCollapse.COLLAPSE_STYLE);
+    }
+
+    renderState() {
+        if(this.isCollapsed()) {
+            this.button.classList.add(EditorCollapse.COLLAPSE_STYLE);
+            this.body.classList.add(EditorCollapse.COLLAPSE_STYLE);
+            this.header.classList.add(EditorCollapse.COLLAPSE_STYLE);
+        } else {
+            this.button.classList.remove(EditorCollapse.COLLAPSE_STYLE);
+            this.body.classList.remove(EditorCollapse.COLLAPSE_STYLE);
+            this.header.classList.remove(EditorCollapse.COLLAPSE_STYLE);
         }
     }
 
@@ -580,6 +617,14 @@ export class EditorParagraphMenu implements EditorComponent {
             lis[0].onclick = this.delete.bind(this);
         }
 
+        if (lis[1]) {
+            lis[1].onclick =  this.copy.bind(this);
+        }
+
+        if (lis[2]) {
+            lis[2].onclick = this.cut.bind(this);
+        }
+
         this.element.onmouseleave = this.hide.bind(this);
 
         this.element.appendChild(ul);
@@ -605,152 +650,49 @@ export class EditorParagraphMenu implements EditorComponent {
             ev.stopPropagation();
         }
     }
+
+    copy(ev: MouseEvent) {
+        if(this.target !== undefined) {
+            navigator.clipboard.write([new ClipboardItem({
+                "text/html": this.target.outerHTML
+            })]).then(() => {
+                this.hide();
+            });
+        }
+    }
+
+    cut(ev: MouseEvent) {
+        if(this.target !== undefined) {
+            navigator.clipboard.write([new ClipboardItem({
+                "text/html": this.target.outerHTML
+            })]).then(() => {
+                this.target?.remove();
+                this.hide();
+            });
+        }
+    }
 }
 
 export class EditorParagraph implements EditorComponent {
-    public  element: HTMLParagraphElement;
-    public  text: HTMLDivElement | undefined;
-    private enterCount: number = 0;
-    private str: string = ""
-    private focus: boolean = false;
-    private focusTail: boolean = false;
+    public context: YangEditor;
+    public element: HTMLElement;
 
-    constructor(str?: string, focus?: boolean) {
-        this.element = document.createElement("p");
-        if(str !== undefined) {
-            this.str = str;
+    constructor(context: YangEditor, element?: HTMLElement) {
+
+        this.context = context;
+        if (element !== undefined) {
+            this.element = element;
+        } else {
+            this.element = document.createElement("p");
+            this.element.classList.add(ComponentFactory.PARAGRAPH_STYLE);
         }
-        if(focus !== undefined) {
-            this.focus = focus;
-        }
-    }
-
-    getFocus(): boolean {
-        return this.focus;
-    }
-
-    setFocus(focus: boolean, focusTail: boolean = false) {
-        this.focus = focus;
-        this.focusTail = focusTail;
     }
 
     onMounted(): void {
-        if(this.text !== undefined && this.focus) {
-            let range = document.createRange();
-            range.selectNodeContents(this.text);
-            range.collapse(false);
-            // range.setStart(this.text, 0);
-            // range.setEnd(this.text, 0);
-            document.getSelection()?.removeAllRanges();
-            document.getSelection()?.addRange(range);
-        }
+        throw new Error("Method not implemented.");
     }
 
     onMount() : HTMLElement {
-        this.element.classList.add("yang-editor-paragraph");
-        this.element.contentEditable = "false";
-        // this.element.tabIndex = 0;
-        // this.element.addEventListener('focus', function(){
-        //     this.classList.add('yang-editor-paragraph-focused');
-        // });
-        //
-        // this.element.addEventListener('blur', function(){
-        //     this.classList.remove('yang-editor-paragraph-focused');
-        // });
-        // FIXME: fix focus
-        let text = document.createElement("div");
-        text.innerHTML = this.str;
-        this.element.appendChild(text);
-
-        let deleteButton = document.createElement("button");
-        deleteButton.classList.add("yang-editor-paragraph-delete");
-        deleteButton.innerText = "Delete";
-        // deleteButton.onclick = () => {globalEventCenter.emit<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, {
-        //     sourceComponent: this,
-        // })};
-        this.element.appendChild(deleteButton);
-
-        const events = ['input', 'paste', 'cut', 'keydown', 'compositionend'];
-        events.forEach(event => {
-            text.addEventListener(event, (ev) => {
-                this.str = text.innerHTML;
-            });
-        });
-
-        const observer = new MutationObserver((mutations) => {
-            // mutations.forEach(function(mutation) {
-            //     console.log('变化类型:', mutation.type);
-            //
-            //     if (mutation.type === 'characterData') {
-            //         console.log('文本内容变化:', mutation.target.textContent);
-            //     } else if (mutation.type === 'childList') {
-            //         console.log('子节点变化:', mutation);
-            //         mutation.addedNodes.forEach(node => {
-            //             console.log('新增节点:', node);
-            //         });
-            //         mutation.removedNodes.forEach(node => {
-            //             console.log('删除节点:', node);
-            //         });
-            //     }
-            // });
-            this.str = text.innerHTML;
-        });
-
-        // 开始观察
-        observer.observe(text, {
-            childList: true,     // 观察直接子节点的变动
-            subtree: true,       // 观察所有后代节点的变动
-            characterData: true, // 观察节点内容或文本的变动
-            attributes: true,    // 观察属性的变动
-            attributeFilter: ['style', 'class'] // 只观察特定属性
-        });
-
-        text.addEventListener ("keydown", (event: KeyboardEvent) => {
-            if(event.key === "Backspace") {
-                if (text.innerText.trim() === "") {
-                    // globalEventCenter.emit<DeleteParagraphData>(Constants.EV_DELETE_PARAGRAPH, {
-                    //     sourceComponent: this,
-                    // })
-                    event.stopPropagation();
-                    event.preventDefault()
-                }
-                return;
-            }
-            if(!event.shiftKey && event.key === "Enter") {
-
-                this.enterCount ++;
-                if(this.enterCount == 2) {
-                    this.enterCount = 0;
-                    event.preventDefault();
-                    let selection = document.getSelection();
-                    if(selection != null && selection.isCollapsed) {
-                        let range = selection.getRangeAt(0);
-                        // 计算光标位置
-                        const preCaretRange = range.cloneRange();
-                        preCaretRange.selectNodeContents(text);
-                        preCaretRange.setStart(range.startContainer, range.startOffset);
-                        if(preCaretRange.toString().length === 0){
-                            let leftString =  text.innerHTML.trim();
-                            let rightString = "";
-
-                            // globalEventCenter.emit<SplitParagraphData>(Constants.EV_SPLIT_PARAGRAPH, {
-                            //     sourceComponent: this,
-                            //     leftText: leftString,
-                            //     rightText: rightString,
-                            // });
-                        }
-
-                    }
-                }
-            } else {
-                this.enterCount = 0;
-            }
-
-        });
-        text.classList.add("yang-editor-paragraph-text");
-        text.contentEditable = "true";
-
-        this.text = text;
         return this.element;
     }
 
@@ -759,3 +701,28 @@ export class EditorParagraph implements EditorComponent {
     }
 }
 
+
+export class ComponentFactory {
+
+    static PARAGRAPH_STYLE = "yang-editor-paragraph";
+    static COLLAPSE_STYLE = "yang-editor-collapse";
+    static STYLES = [this.PARAGRAPH_STYLE, this.COLLAPSE_STYLE];
+
+    private context: YangEditor;
+
+    constructor(context: YangEditor) {
+        this.context = context;
+    }
+
+    createComponent(typeClassName: string, element?: HTMLElement): EditorComponent {
+        switch (typeClassName) {
+            case ComponentFactory.PARAGRAPH_STYLE:
+                return new EditorParagraph(this.context, element);
+            case ComponentFactory.COLLAPSE_STYLE:
+                return new EditorCollapse(this.context, element);
+            default:
+                throw new Error(`Unknown component type: ${typeClassName}`);
+        }
+    }
+
+}

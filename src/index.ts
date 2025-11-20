@@ -1,4 +1,4 @@
-import {EditorBody, EditorComponent, EditorContent, EditorParagraph, EditorParagraphMenu, EditorToolbar} from "./componets";
+import {ComponentFactory, EditorBody, EditorComponent, EditorContent, EditorParagraph, EditorParagraphMenu, EditorToolbar} from "./componets";
 import { SelectionUtils } from "./utils";
 
 export interface YangEditorOptions {
@@ -27,6 +27,7 @@ export class YangEditor {
     public readonly toolbar: EditorToolbar;
     public readonly body: EditorBody;
     public readonly selectionUtils: SelectionUtils;
+    public readonly componentFactory: ComponentFactory;
 
     private components: Array<EditorComponent> = new Array<EditorComponent>();
 
@@ -39,6 +40,7 @@ export class YangEditor {
         this.toolbar = new EditorToolbar(this);
         this.body = new EditorBody(this);
         this.selectionUtils = new SelectionUtils(this.element);
+        this.componentFactory = new ComponentFactory(this);
     }
 
     render() {

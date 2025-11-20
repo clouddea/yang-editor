@@ -1,4 +1,4 @@
-import { EditorContent } from "./componets";
+import { ComponentFactory } from "./componets";
 
 export class SelectionUtils {
 
@@ -15,7 +15,7 @@ export class SelectionUtils {
             while(node && node !== this.element) {
                 if(node.nodeType === Node.ELEMENT_NODE) {
                     let elem = node as HTMLElement;
-                    if(elem.classList.contains(EditorContent.PARAGRAPH_STYLE)) {
+                    if(elem.classList.contains(ComponentFactory.PARAGRAPH_STYLE)) {
                         return elem;
                     }
                 }
