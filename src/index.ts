@@ -1,10 +1,13 @@
 import {ComponentFactory, EditorBody, EditorComponent, EditorContent, EditorParagraph, EditorParagraphMenu, EditorToolbar} from "./componets";
 import { SelectionUtils } from "./utils";
 
+export type YangEditorMode = "edit" | "readonly";
+
 export interface YangEditorOptions {
     elem: string;
     width: string;
     height: string;
+    mode: YangEditorMode;
     images: {
         add: string,
         menu: string,
@@ -18,6 +21,9 @@ export interface YangEditorOptions {
         delete: string,
         copy: string,
         cut: string,
+    },
+    events: {
+        onContentChange?: (html: string) => void,
     }
 }
 
@@ -49,10 +55,19 @@ export class YangEditor {
         this.element.style.width = this.options.width;
         this.element.innerHTML = "";
         // add components
-        this.element.appendChild(this.toolbar.onMount());
+        if (this.options.mode === "edit") {
+            this.element.appendChild(this.toolbar.onMount());
+        }
         this.element.appendChild(this.body.onMount());
     }
 
+    setHTMLContent(html: string) {
+        this.body.content.getElement().innerHTML = html;
+    }
+
+    getHTMLContent(): string {
+        return this.body.content.getElement().innerHTML;
+    }
 }
 
 function create(options: YangEditorOptions): YangEditor {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import YangEditor from "yang-editor";
+import YangEditorFacade, {YangEditor, type YangEditorMode} from "yang-editor";
 import './Editor.css';
 import 'yang-editor/src/style.css';
 import addIcon from './images/add@2x.png';
@@ -16,16 +16,27 @@ import deleteIcon from './images/delete@2x.png';
 import copyIcon from './images/copy@2x.png';
 import cutIcon from './images/cut@2x.png';
 
-const Editor = function () {
+type EditorProps = {
+    id: string;
+    content?: string;
+    onChange?: (html: string) => void;
+    mode: YangEditorMode
+}
 
-    const [inited, setInited] = React.useState(false);
+const Editor = function (props: EditorProps) {
+
+    const [inited, setInited] = React.useState<boolean>(false);
+    const [editor, setEditor] = React.useState<YangEditor | null>(null);
+
+    console.log("Editor props:", props);
 
     useEffect(() => {
         if(!inited){
-            YangEditor.create({
-                elem: 'editor',
+            let editor = YangEditorFacade.create({
+                elem: props.id,
                 width: '800px',
                 height: 'auto',
+                mode: props.mode,
                 images: {
                     add: addIcon,
                     menu: menu2Icon,
@@ -39,13 +50,24 @@ const Editor = function () {
                     delete: deleteIcon,
                     copy: copyIcon,
                     cut: cutIcon,
+                },
+                events: {
+                    onContentChange: props.onChange,
                 }
             });
+            if (props.content) {
+                editor.setHTMLContent(props.content);
+            }
             setInited(true);
+            setEditor(editor);
+        } else {
+            if (editor) {
+                editor.setHTMLContent(props.content || "");
+            }
         }
-    }, []);
+    }, [props.content]);
 
-    return <div className={"components-editor"} id='editor'></div>;
+    return <div className={"components-editor"} id={props.id}></div>;
 }
 
 export default Editor;

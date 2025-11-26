@@ -51,9 +51,14 @@ export class EditorContent implements EditorComponent {
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-content");
-        this.element.contentEditable = "true";
+        if(this.context.options.mode === "edit") {
+            this.element.contentEditable = "true";
+        }
 
         const observer = new MutationObserver((mutations) => {
+            if (this.context.options.events.onContentChange) {
+                this.context.options.events.onContentChange(this.element.innerHTML);
+            }
             let childNodes = this.element.childNodes;
             // transform text nodes or non-paragraph elements to paragraphs
             for(let node of childNodes) {
@@ -91,13 +96,15 @@ export class EditorContent implements EditorComponent {
             // add mousemove and mouseleave event to every child nodes
             for(let node of this.element.children) {
                 if(node.nodeType === Node.ELEMENT_NODE) {
-                    let elem = node as HTMLElement;
-                    elem.onmousemove = () => {
-                        this.context.body.menuButton.show(elem);
-                    };
-                    elem.onmouseleave = () => {
-                        this.context.body.menuButton.hide();
-                    };
+                    if(this.context.options.mode === "edit") {
+                        let elem = node as HTMLElement;
+                        elem.onmousemove = () => {
+                            this.context.body.menuButton.show(elem);
+                        };
+                        elem.onmouseleave = () => {
+                            this.context.body.menuButton.hide();
+                        };
+                    }
                 }
             }
 
@@ -510,9 +517,6 @@ export class EditorCollapse implements EditorComponent {
             this.element.appendChild(this.container);
 
             this.container.contentEditable = "false";
-            this.title.contentEditable = "true";
-            this.body.contentEditable = "true";
-
             this.button.style.backgroundImage = `url(${this.context.options.images.down})`;
         }
     }
@@ -522,6 +526,13 @@ export class EditorCollapse implements EditorComponent {
     }
 
     onMount(): HTMLElement {
+        if(this.context.options.mode === "edit") {
+            this.title.contentEditable = "true";
+            this.body.contentEditable = "true";
+        } else {
+            this.title.contentEditable = "false";
+            this.body.contentEditable = "false";
+        }
         this.button.onclick = () => {
             this.switchState();
             this.renderState();
