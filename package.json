@@ -1,5 +1,5 @@
 {
-  "name": "yang-editor",
+  "name": "@cloudea/yang-editor",
   "version": "1.0.0",
   "description": "a fast block editor",
   "main": "./dist/index.js",
@@ -12,7 +12,27 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clouddea/yang-editor.git"
+  },
+  "keywords": [
+    "editor",
+    "block editor",
+    "mordern editor",
+    "rich text editor"
+  ],
+  "bugs": {
+    "url": "https://github.com/clouddea/yang-editor/issues"
+  },
+  "homepage": "https://github.com/clouddea/yang-editor#readme",
+  "files": [
+    "dist/",
+    "src/",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "tsconfig.json"
+  ]
 }
-
-
