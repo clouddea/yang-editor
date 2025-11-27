@@ -15,6 +15,7 @@ import downIcon from './images/down@2x.png';
 import deleteIcon from './images/delete@2x.png';
 import copyIcon from './images/copy@2x.png';
 import cutIcon from './images/cut@2x.png';
+import fgColor from './images/fgcolor.svg';
 
 type EditorProps = {
     id: string;
@@ -50,6 +51,7 @@ const Editor = function (props: EditorProps) {
                     delete: deleteIcon,
                     copy: copyIcon,
                     cut: cutIcon,
+                    fgColor: fgColor
                 },
                 events: {
                     onContentChange: props.onChange,

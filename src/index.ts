@@ -21,6 +21,7 @@ export interface YangEditorOptions {
         delete: string,
         copy: string,
         cut: string,
+        fgColor: string
     },
     events: {
         onContentChange?: (html: string) => void,

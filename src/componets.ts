@@ -213,6 +213,7 @@ class ContentBeforeMenu implements EditorComponent {
 
         let button = document.createElement("button");
         button.classList.add("yang-editor-content-before-menu-button");
+        button.style.backgroundImage = `url(${this.context.options.images.menu})`;
 
         this.element.onclick = () => this.sideMenu.show(this.target);
         this.element.onmouseenter = () => this.show(this.target);
@@ -280,7 +281,7 @@ class ButtonAdd implements EditorComponent {
 
 }
 
-class ColorStrip implements EditorComponent {
+class BackGroundColorStrip implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
     public readonly colors: Array<string>;
@@ -314,6 +315,60 @@ class ColorStrip implements EditorComponent {
                     // eqauls to: 
                     // document.execCommand('styleWithCSS', false, true);
                     // document.execCommand('foreColor', false, this.value);
+                }
+            } 
+            this.element.appendChild(btn);
+        }
+        return this.element;
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+}
+
+class ForeGroundColorStrip implements EditorComponent {
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+    public readonly colors: Array<string>;
+    public readonly titles: Array<string>;
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("div");
+        this.colors = ["rgba(228, 73, 91, 1)", "rgba(255, 140, 0, 1)", "rgba(255, 215, 0, 1)", "rgba(34, 139, 34, 1)", "rgba(30, 144, 255, 1)", "rgba(138, 43, 226, 1)", "rgba(255, 20, 147, 1)"];
+        this.titles = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
+    }
+
+    onMount(): HTMLElement {
+        this.element.classList.add("yang-editor-fgcolor-strip");
+        this.element.style.display = "flex";
+        this.element.style.alignItems = "center";
+        for(let i = 0; i < this.colors.length; i++) {
+            let color = this.colors[i];
+            let title = this.titles[i];
+            let btn = document.createElement("button");
+            if(color != undefined && title != undefined) {
+                // btn.style.backgroundColor = "transparent";
+                // btn.style.backgroundImage = `url(${this.context.options.images.fgColor})`;
+                // btn.style.backgroundSize = "16px 16px";
+                // btn.style.backgroundRepeat = "no-repeat";
+                // btn.style.backgroundPosition = "center";
+                btn.style.mask = `url(${this.context.options.images.fgColor}) no-repeat center`;
+                btn.style.webkitMask = `url(${this.context.options.images.fgColor}) no-repeat center`;
+                btn.style.backgroundColor = color;
+                btn.style.width = "17px";
+                btn.style.height = "17px";
+                btn.style.borderRadius = "2px";
+                btn.style.cursor = "pointer";
+                btn.title = title;
+                btn.onclick = () => {
+                    document.execCommand('foreColor', false, color);
+                    this.context.selectionUtils.getSelectionRange()?.collapse();
                 }
             } 
             this.element.appendChild(btn);
@@ -387,7 +442,8 @@ export class EditorToolbar implements EditorComponent {
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-toolbar");
         this.element.appendChild(new ButtonAdd(this.context).onMount());
-        this.element.appendChild(new ColorStrip(this.context).onMount());
+        this.element.appendChild(new BackGroundColorStrip(this.context).onMount());
+        this.element.appendChild(new ForeGroundColorStrip(this.context).onMount());
         this.element.appendChild(new IconButton(this.context, this.context.options.images.bold, "Bold", this.boldSelection.bind(this)).onMount());
         this.element.appendChild(new IconButton(this.context, this.context.options.images.italic, "Italic", this.italicSelection.bind(this)).onMount());
         this.element.appendChild(new IconButton(this.context, this.context.options.images.underline, "Underline", this.underlineSelection.bind(this)).onMount());
