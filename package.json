@@ -1,6 +1,6 @@
 {
   "name": "@cloudea/yang-editor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a fast block editor",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,7 +34,7 @@
     "dist/",
     "doc/",
     "images/",
-    "src/", 
+    "src/",
     "LICENSE",
     "package.json",
     "README.md",
