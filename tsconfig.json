@@ -9,12 +9,13 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
-    "types": [],
+    "types": ["node"], // and npm install -D @types/node
     // For nodejs:
      "lib": ["esnext", "dom", "dom.iterable"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     // Other Outputs
     "sourceMap": true,
     "declaration": true,

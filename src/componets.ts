@@ -1,3 +1,4 @@
+import { images } from "./images";
 import { YangEditor } from "./index";
 
 export interface EditorElement {
@@ -213,7 +214,7 @@ class ContentBeforeMenu implements EditorComponent {
 
         let button = document.createElement("button");
         button.classList.add("yang-editor-content-before-menu-button");
-        button.style.backgroundImage = `url(${this.context.options.images.menu})`;
+        button.style.backgroundImage = `url("${images.menu2}")`;
 
         this.element.onclick = () => this.sideMenu.show(this.target);
         this.element.onmouseenter = () => this.show(this.target);
@@ -258,7 +259,7 @@ class ButtonAdd implements EditorComponent {
         this.element.style.width = "16px";
         this.element.style.height = "16px";
         this.element.style.height = "16px";
-        this.element.style.backgroundImage = `url(${this.context.options.images.add})`;
+        this.element.style.backgroundImage = `url("${images.add2x}")`;
         this.element.style.backgroundSize = "contain";
         this.element.style.backgroundRepeat = "no-repeat";
         this.element.style.cursor = "pointer";
@@ -358,8 +359,8 @@ class ForeGroundColorStrip implements EditorComponent {
                 // btn.style.backgroundSize = "16px 16px";
                 // btn.style.backgroundRepeat = "no-repeat";
                 // btn.style.backgroundPosition = "center";
-                btn.style.mask = `url(${this.context.options.images.fgColor}) no-repeat center`;
-                btn.style.webkitMask = `url(${this.context.options.images.fgColor}) no-repeat center`;
+                btn.style.mask = `url("${images.fgcolor}") no-repeat center`;
+                btn.style.webkitMask = `url("${images.fgcolor}") no-repeat center`;
                 btn.style.backgroundColor = color;
                 btn.style.width = "17px";
                 btn.style.height = "17px";
@@ -444,12 +445,12 @@ export class EditorToolbar implements EditorComponent {
         this.element.appendChild(new ButtonAdd(this.context).onMount());
         this.element.appendChild(new BackGroundColorStrip(this.context).onMount());
         this.element.appendChild(new ForeGroundColorStrip(this.context).onMount());
-        this.element.appendChild(new IconButton(this.context, this.context.options.images.bold, "Bold", this.boldSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, this.context.options.images.italic, "Italic", this.italicSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, this.context.options.images.underline, "Underline", this.underlineSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, this.context.options.images.deleteline, "Delete Line", this.strokeThroughSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, this.context.options.images.link, "Link", this.insertLink.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, this.context.options.images.clear, "Clear", this.clearFormatSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.bold2x, "Bold", this.boldSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.italic2x, "Italic", this.italicSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.underline2x, "Underline", this.underlineSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.deleteline2x, "Delete Line", this.strokeThroughSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.link2x, "Link", this.insertLink.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.clear2x, "Clear", this.clearFormatSelection.bind(this)).onMount());
         return this.element;
     }
 
@@ -573,7 +574,7 @@ export class EditorCollapse implements EditorComponent {
             this.element.appendChild(this.container);
 
             this.container.contentEditable = "false";
-            this.button.style.backgroundImage = `url(${this.context.options.images.down})`;
+            this.button.style.backgroundImage = `url("${images.down2x}")`;
         }
     }
 
@@ -649,10 +650,10 @@ export class EditorParagraphMenu implements EditorComponent {
         this.element.classList.add("yang-editor-paragraph-menu");
         let ul = document.createElement("ul");
         let lis = new Array<HTMLLIElement>();
-        let images = [this.context.options.images.delete, this.context.options.images.copy, this.context.options.images.cut];
+        let icons = [images.deleteline2x, images.copy2x, images.cut2x];
         let texts = ["Delete", "Copy", "Cut"];
 
-        for(let i = 0; i < images.length; i++) {
+        for(let i = 0; i < icons.length; i++) {
             let li = document.createElement("li");
             let icon = document.createElement("button");
             let text = document.createElement("p");
@@ -661,7 +662,7 @@ export class EditorParagraphMenu implements EditorComponent {
             text.classList.add("yang-editor-paragraph-menu-item-text");
             let title = texts[i];
             if(title !== undefined) {
-                icon.style.backgroundImage = `url(${images[i]})`;
+                icon.style.backgroundImage = `url("${icons[i]}")`;
                 icon.style.backgroundSize = "16px 16px";
                 icon.style.backgroundRepeat = "no-repeat";
                 icon.style.backgroundPosition = "center";

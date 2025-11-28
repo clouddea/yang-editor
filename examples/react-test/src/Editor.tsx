@@ -2,20 +2,6 @@ import React, { useEffect } from 'react'
 import YangEditorFacade, {YangEditor, type YangEditorMode} from "yang-editor";
 import './Editor.css';
 import 'yang-editor/src/style.css';
-import addIcon from './images/add@2x.png';
-import menuIcon from './images/menu@2x.png';
-import menu2Icon from './images/menu2.svg';
-import boldIcon from './images/bold@2x.png';
-import italicIcon from './images/italic@2x.png';
-import underlineIcon from './images/underline@2x.png';
-import deletelineIcon from './images/deleteline@2x.png';
-import linkIcon from './images/link@2x.png';
-import clearIcon from './images/clear@2x.png';
-import downIcon from './images/down@2x.png';
-import deleteIcon from './images/delete@2x.png';
-import copyIcon from './images/copy@2x.png';
-import cutIcon from './images/cut@2x.png';
-import fgColor from './images/fgcolor.svg';
 
 type EditorProps = {
     id: string;
@@ -38,21 +24,6 @@ const Editor = function (props: EditorProps) {
                 width: '800px',
                 height: 'auto',
                 mode: props.mode,
-                images: {
-                    add: addIcon,
-                    menu: menu2Icon,
-                    bold: boldIcon,
-                    italic: italicIcon,
-                    underline: underlineIcon,
-                    deleteline: deletelineIcon,
-                    link: linkIcon,
-                    clear: clearIcon,
-                    down: downIcon,
-                    delete: deleteIcon,
-                    copy: copyIcon,
-                    cut: cutIcon,
-                    fgColor: fgColor
-                },
                 events: {
                     onContentChange: props.onChange,
                 }

@@ -8,21 +8,6 @@ export interface YangEditorOptions {
     width: string;
     height: string;
     mode: YangEditorMode;
-    images: {
-        add: string,
-        menu: string,
-        bold: string,
-        italic: string,
-        underline: string,
-        deleteline: string,
-        link: string,
-        clear: string,
-        down: string,
-        delete: string,
-        copy: string,
-        cut: string,
-        fgColor: string
-    },
     events: {
         onContentChange?: (html: string) => void,
     }
