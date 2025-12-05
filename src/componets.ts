@@ -238,7 +238,6 @@ class ContentBeforeMenu implements EditorComponent {
         }
         if(target) {
             this.target = target;
-            this.element.style.left = `24px`;
             this.element.style.top = target.offsetTop + `px`;
         }
     }
@@ -255,17 +254,11 @@ class ButtonAdd implements EditorComponent {
     constructor(editor: YangEditor) {
         this.context = editor;
         this.element = document.createElement("button");
+        this.element.classList.add("yang-editor-button-add");
         this.element.innerText = "";
-        this.element.style.width = "16px";
-        this.element.style.height = "16px";
-        this.element.style.height = "16px";
         this.element.style.backgroundImage = `url("${images.add2x}")`;
-        this.element.style.backgroundSize = "contain";
-        this.element.style.backgroundRepeat = "no-repeat";
-        this.element.style.cursor = "pointer";
         this.element.title = "Add Collapsed Panel";
         this.element.onclick = () => this.context.body.content.insertCollapse();
-
     }
 
     onMount(): HTMLElement {
@@ -297,18 +290,12 @@ class BackGroundColorStrip implements EditorComponent {
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-color-strip");
-        this.element.style.display = "flex";
-        this.element.style.alignItems = "center";
         for(let i = 0; i < this.colors.length; i++) {
             let color = this.colors[i];
             let title = this.titles[i];
             let btn = document.createElement("button");
             if(color != undefined && title != undefined) {
                 btn.style.backgroundColor = color;
-                btn.style.width = "16px";
-                btn.style.height = "16px";
-                btn.style.borderRadius = "2px";
-                btn.style.cursor = "pointer";
                 btn.title = title;
                 btn.onclick = () => {
                     document.execCommand('backColor', false, color);
@@ -347,25 +334,14 @@ class ForeGroundColorStrip implements EditorComponent {
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-fgcolor-strip");
-        this.element.style.display = "flex";
-        this.element.style.alignItems = "center";
         for(let i = 0; i < this.colors.length; i++) {
             let color = this.colors[i];
             let title = this.titles[i];
             let btn = document.createElement("button");
             if(color != undefined && title != undefined) {
-                // btn.style.backgroundColor = "transparent";
-                // btn.style.backgroundImage = `url(${this.context.options.images.fgColor})`;
-                // btn.style.backgroundSize = "16px 16px";
-                // btn.style.backgroundRepeat = "no-repeat";
-                // btn.style.backgroundPosition = "center";
+                btn.style.backgroundColor = color;
                 btn.style.mask = `url("${images.fgcolor}") no-repeat center`;
                 btn.style.webkitMask = `url("${images.fgcolor}") no-repeat center`;
-                btn.style.backgroundColor = color;
-                btn.style.width = "17px";
-                btn.style.height = "17px";
-                btn.style.borderRadius = "2px";
-                btn.style.cursor = "pointer";
                 btn.title = title;
                 btn.onclick = () => {
                     document.execCommand('foreColor', false, color);
@@ -395,26 +371,12 @@ class IconButton implements EditorComponent {
         this.element = document.createElement("button");
         this.element.classList.add("yang-editor-icon-button");
         this.element.style.backgroundImage = `url(${icon})`;
-        this.element.style.backgroundColor = "transparent";
-        this.element.style.width = "26px";
-        this.element.style.height = "26px";
-        this.element.style.borderRadius = "3px";
-        this.element.style.cursor = "pointer";
-        this.element.style.backgroundSize = "16px 16px";
-        this.element.style.backgroundRepeat = "no-repeat";
-        this.element.style.backgroundPosition = "center center";
         this.element.title = tooltip;
         this.element.onclick = () => {
             if(onclick) {
                 onclick();
             }
         };
-        this.element.onmouseover = () => {
-            this.element.style.backgroundColor = "rgba(231, 233, 232, 1)";
-        };
-        this.element.onmouseleave = () => {
-            this.element.style.backgroundColor = "transparent";
-        }
 
     }
 
@@ -663,16 +625,6 @@ export class EditorParagraphMenu implements EditorComponent {
             let title = texts[i];
             if(title !== undefined) {
                 icon.style.backgroundImage = `url("${icons[i]}")`;
-                icon.style.backgroundSize = "16px 16px";
-                icon.style.backgroundRepeat = "no-repeat";
-                icon.style.backgroundPosition = "center";
-                icon.style.width = "20px";
-                icon.style.height = "20px";
-                icon.style.cursor = "pointer";
-                icon.style.border = "none";
-                icon.style.outline = "none";
-                li.style.display = "flex";
-                li.style.alignItems = "center";
                 text.innerText = title;
                 li.appendChild(icon);
                 li.appendChild(text);

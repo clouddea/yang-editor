@@ -70,13 +70,26 @@
     /* background-color: red !important; */
 }
 
+.yang-editor .yang-editor-button-add {
+    width: 16px;
+    height: 16px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
 
 .yang-editor .yang-editor-color-strip {
     padding-left: 19px;
+    display: flex;
+    align-items: center;
 }
 
 .yang-editor .yang-editor-color-strip button {
     margin-left: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    cursor: pointer;
 }
 
 .yang-editor .yang-editor-color-strip button:first-child {
@@ -85,10 +98,16 @@
 
 .yang-editor .yang-editor-fgcolor-strip {
     padding-left: 8px;
+    display: flex;
+    align-items: center;
 }
 
 .yang-editor .yang-editor-fgcolor-strip button {
     margin-left: 8px;
+    width: 17px;
+    height: 17px;
+    border-radius: 2px;
+    cursor: pointer;
 }
 
 .yang-editor .yang-editor-fgcolor-strip button:first-child {
@@ -97,6 +116,18 @@
 
 .yang-editor .yang-editor-icon-button {
     margin-left: 4px;
+    background-color: transparent;
+    width: 26px;
+    height: 26px;
+    border-radius: 3px;
+    cursor: pointer;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.yang-editor .yang-editor-icon-button:hover {
+    background-color: rgba(231, 233, 232, 1);
 }
 
 .yang-editor .yang-editor-icon-button:nth-of-type(2){
@@ -200,6 +231,8 @@
     border-radius: 6px;
     cursor: pointer;
     padding: 8px;
+    display: flex;
+    align-items: center;
 }
 
 .yang-editor .yang-editor-paragraph-menu-item:hover {
@@ -210,6 +243,15 @@
     flex-shrink: 0;
     background: transparent;
     margin-right: 8px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+
 }
 
 .yang-editor .yang-editor-paragraph-menu-item-text {
