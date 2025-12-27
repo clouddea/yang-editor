@@ -69,6 +69,7 @@
 .yang-editor .yang-editor-button-add {
     width: 16px;
     height: 16px;
+    background-color: transparent;
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
