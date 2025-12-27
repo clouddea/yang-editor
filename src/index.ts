@@ -3,6 +3,11 @@ import { SelectionUtils } from "./utils";
 
 export type YangEditorMode = "edit" | "readonly";
 
+export interface YangEditorColor {
+    color: string;
+    name: string;
+}
+
 export interface YangEditorOptions {
     elem: string;
     width: string;
@@ -10,6 +15,17 @@ export interface YangEditorOptions {
     mode: YangEditorMode;
     events: {
         onContentChange?: (html: string) => void,
+    },
+    components?: {
+        foreColorStrip?: {
+            colors?: YangEditorColor[]
+        },
+        backColorStrip?: {
+            colors?: YangEditorColor[]
+        },
+        link?: {
+            openInNewTab?: boolean
+        }
     }
 }
 

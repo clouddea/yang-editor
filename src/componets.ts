@@ -1,5 +1,5 @@
 import { images } from "./images";
-import { YangEditor } from "./index";
+import {YangEditor, YangEditorColor} from "./index";
 
 export interface EditorElement {
 }
@@ -278,21 +278,27 @@ class ButtonAdd implements EditorComponent {
 class BackGroundColorStrip implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
-    public readonly colors: Array<string>;
-    public readonly titles: Array<string>;
+    public readonly colors: Array<YangEditorColor> = [
+        {name: 'red', color: 'rgba(228, 73, 91, 1)'},
+        {name: 'orange', color: 'rgba(255, 140, 0, 1)'},
+        {name: 'yellow', color: 'rgba(255, 215, 0, 1)'},
+        {name: 'green', color: 'rgba(34, 139, 34, 1)'},
+        {name: 'blue', color: 'rgba(30, 144, 255, 1)'},
+        {name: 'purple', color: 'rgba(138, 43, 226, 1)'},
+        {name: 'pink', color: 'rgba(255, 20, 147, 1)'},
+    ];
 
     constructor(editor: YangEditor) {
         this.context = editor;
         this.element = document.createElement("div");
-        this.colors = ["rgba(228, 73, 91, 1)", "rgba(255, 140, 0, 1)", "rgba(255, 215, 0, 1)", "rgba(34, 139, 34, 1)", "rgba(30, 144, 255, 1)", "rgba(138, 43, 226, 1)", "rgba(255, 20, 147, 1)"];
-        this.titles = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
+        this.colors = editor.options.components?.backColorStrip?.colors || this.colors;
     }
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-color-strip");
-        for(let i = 0; i < this.colors.length; i++) {
-            let color = this.colors[i];
-            let title = this.titles[i];
+        for(let colorItem of this.colors) {
+            let color = colorItem.color;
+            let title = colorItem.name;
             let btn = document.createElement("button");
             if(color != undefined && title != undefined) {
                 btn.style.backgroundColor = color;
@@ -300,7 +306,7 @@ class BackGroundColorStrip implements EditorComponent {
                 btn.onclick = () => {
                     document.execCommand('backColor', false, color);
                     this.context.selectionUtils.getSelectionRange()?.collapse();
-                    // eqauls to: 
+                    // equals to:
                     // document.execCommand('styleWithCSS', false, true);
                     // document.execCommand('foreColor', false, this.value);
                 }
@@ -322,21 +328,27 @@ class BackGroundColorStrip implements EditorComponent {
 class ForeGroundColorStrip implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
-    public readonly colors: Array<string>;
-    public readonly titles: Array<string>;
+    public readonly colors: Array<YangEditorColor> = [
+        {name: 'red', color: 'rgba(228, 73, 91, 1)'},
+        {name: 'orange', color: 'rgba(255, 140, 0, 1)'},
+        {name: 'yellow', color: 'rgba(255, 215, 0, 1)'},
+        {name: 'green', color: 'rgba(34, 139, 34, 1)'},
+        {name: 'blue', color: 'rgba(30, 144, 255, 1)'},
+        {name: 'purple', color: 'rgba(138, 43, 226, 1)'},
+        {name: 'pink', color: 'rgba(255, 20, 147, 1)'},
+    ];
 
     constructor(editor: YangEditor) {
         this.context = editor;
         this.element = document.createElement("div");
-        this.colors = ["rgba(228, 73, 91, 1)", "rgba(255, 140, 0, 1)", "rgba(255, 215, 0, 1)", "rgba(34, 139, 34, 1)", "rgba(30, 144, 255, 1)", "rgba(138, 43, 226, 1)", "rgba(255, 20, 147, 1)"];
-        this.titles = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
+        this.colors = editor.options.components?.foreColorStrip?.colors || this.colors;
     }
 
     onMount(): HTMLElement {
         this.element.classList.add("yang-editor-fgcolor-strip");
-        for(let i = 0; i < this.colors.length; i++) {
-            let color = this.colors[i];
-            let title = this.titles[i];
+        for(let colorItem of this.colors) {
+            let color = colorItem.color;
+            let title = colorItem.name;
             let btn = document.createElement("button");
             if(color != undefined && title != undefined) {
                 btn.style.backgroundColor = color;
@@ -432,6 +444,9 @@ export class EditorToolbar implements EditorComponent {
             const selectedContent = range.extractContents();
             const linkElement = document.createElement('a');
             linkElement.href = url;
+            if (this.context.options.components?.link?.openInNewTab) {
+                linkElement.target = '_blank'
+            }
             linkElement.appendChild(selectedContent);
             range.insertNode(linkElement);
         }

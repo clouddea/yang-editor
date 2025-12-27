@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
-import YangEditorFacade, {YangEditor, type YangEditorMode} from "yang-editor";
+import YangEditorFacade, {YangEditor, type YangEditorMode} from "@cloudea/yang-editor";
 import './Editor.css';
-import 'yang-editor/src/style.css';
+import '@cloudea/yang-editor/src/style.css';
 
 type EditorProps = {
     id: string;
@@ -26,7 +26,27 @@ const Editor = function (props: EditorProps) {
                 mode: props.mode,
                 events: {
                     onContentChange: props.onChange,
+                },
+                components: {
+                    foreColorStrip: {
+                        colors: [
+                            {name: '红色', color: 'rgba(228, 73, 91, 1)'},
+                            {name: '橘色', color: 'rgba(255, 140, 0, 1)'},
+                            {name: '黄色', color: 'rgba(255, 215, 0, 1)'},
+                        ]
+                    },
+                    backColorStrip: {
+                        colors: [
+                            {name: '绿色', color: 'rgba(34, 139, 34, 1)'},
+                            {name: '蓝色', color: 'rgba(30, 144, 255, 1)'},
+                            {name: '紫色', color: 'rgba(138, 43, 226, 1)'},
+                        ]
+                    },
+                    link: {
+                        openInNewTab: true,
+                    }
                 }
+
             });
             if (props.content) {
                 editor.setHTMLContent(props.content);
