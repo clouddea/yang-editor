@@ -79,9 +79,24 @@ export class EditorContent implements EditorComponent {
             }
 
             // insert empty paragraph
-            let lastElement = this.element.children[this.element.children.length - 1];
-            if (lastElement === undefined || lastElement.childNodes.length > 0) {
-                this.insertDefaultParagraph();
+            if (this.context.options.mode === "edit") {
+                let lastElement = this.element.children[this.element.children.length - 1];
+                if (lastElement === undefined || lastElement.childNodes.length > 0) {
+                    this.insertDefaultParagraph();
+                }
+            }
+
+            // remove empty paragraph if mode is readonly
+            if (this.context.options.mode === "readonly") {
+                let allChildren = [...this.element.children];
+                for (let i = allChildren.length - 1; i >= 0; i--) {
+                    let child = allChildren[i];
+                    if (child && (child.childNodes.length == 0 || child.textContent.trim() === '')) {
+                        child.remove();
+                    } else {
+                        break;
+                    }
+                }
             }
 
             // tag every childnodes
@@ -419,12 +434,12 @@ export class EditorToolbar implements EditorComponent {
         this.element.appendChild(new ButtonAdd(this.context).onMount());
         this.element.appendChild(new BackGroundColorStrip(this.context).onMount());
         this.element.appendChild(new ForeGroundColorStrip(this.context).onMount());
-        this.element.appendChild(new IconButton(this.context, images.bold2x, "Bold", this.boldSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, images.italic2x, "Italic", this.italicSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, images.underline2x, "Underline", this.underlineSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, images.deleteline2x, "Delete Line", this.strokeThroughSelection.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, images.link2x, "Link", this.insertLink.bind(this)).onMount());
-        this.element.appendChild(new IconButton(this.context, images.clear2x, "Clear", this.clearFormatSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.bold2x, "加粗", this.boldSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.italic2x, "斜体", this.italicSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.underline2x, "下划线", this.underlineSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.deleteline2x, "删除线", this.strokeThroughSelection.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.link2x, "链接", this.insertLink.bind(this)).onMount());
+        this.element.appendChild(new IconButton(this.context, images.clear2x, "清除格式", this.clearFormatSelection.bind(this)).onMount());
         return this.element;
     }
 
@@ -628,7 +643,8 @@ export class EditorParagraphMenu implements EditorComponent {
         let ul = document.createElement("ul");
         let lis = new Array<HTMLLIElement>();
         let icons = [images.deleteline2x, images.copy2x, images.cut2x];
-        let texts = ["Delete", "Copy", "Cut"];
+        let texts = ["删除", "复制", "剪切"];
+
 
         for(let i = 0; i < icons.length; i++) {
             let li = document.createElement("li");
