@@ -46,7 +46,6 @@ const Editor = function (props: EditorProps) {
                         openInNewTab: true,
                     }
                 }
-
             });
             if (props.content) {
                 editor.setHTMLContent(props.content);

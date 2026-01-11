@@ -1,11 +1,20 @@
-import {ComponentFactory, EditorBody, EditorComponent, EditorContent, EditorParagraph, EditorParagraphMenu, EditorToolbar} from "./componets";
+import {ComponentFactory, EditorBody, EditorComponent, EditorToolbar, EditorFunction} from "./componets";
 import { SelectionUtils } from "./utils";
+import {images} from "./images";
 
 export type YangEditorMode = "edit" | "readonly";
 
 export interface YangEditorColor {
     color: string;
     name: string;
+}
+
+export interface YangEditorMenuItem {
+    name: string;
+    icon: string;
+    className?: string;
+    callback?: EditorFunction;
+    args?: any
 }
 
 export interface YangEditorOptions {
@@ -16,6 +25,7 @@ export interface YangEditorOptions {
     events: {
         onContentChange?: (html: string) => void,
     },
+    menus?: YangEditorMenuItem[],
     components?: {
         foreColorStrip?: {
             colors?: YangEditorColor[]
@@ -29,6 +39,20 @@ export interface YangEditorOptions {
     }
 }
 
+const defaultOptions : YangEditorOptions = {
+    menus: [
+        { name: "折叠面板", icon: images.collapse2x, className: 'gray', callback: "insertCollapse", args: {className: "gray"} },
+        { name: "图片", icon: images.image2x, args: null },
+        { name: "代码块", icon: images.code2x, args: null },
+    ],
+    components: {},
+    elem: "yang-editor",
+    events: {},
+    width: "100%",
+    height: "auto",
+    mode: 'edit'
+}
+
 export class YangEditor {
 
     public readonly element: HTMLElement;
@@ -36,10 +60,13 @@ export class YangEditor {
     public readonly body: EditorBody;
     public readonly selectionUtils: SelectionUtils;
     public readonly componentFactory: ComponentFactory;
+    public readonly options: YangEditorOptions;
 
     private components: Array<EditorComponent> = new Array<EditorComponent>();
 
-    constructor(public options: YangEditorOptions) {
+    constructor(options: YangEditorOptions) {
+        this.options = {...defaultOptions, ...options};
+
         let element = document.getElementById(options.elem);
         if(element === null ) {
             throw new Error(`Invalid Yang Editor option "${options.elem}"`);

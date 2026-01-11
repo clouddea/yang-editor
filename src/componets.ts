@@ -10,6 +10,8 @@ export interface EditorComponent extends EditorElement {
     onMounted(): void;
 }
 
+export type EditorFunction = "insertCollapse" | "insertImage" | "insertCode"
+
 export class EditorBody implements EditorComponent {
     public readonly element: HTMLDivElement;
     public readonly context: YangEditor;
@@ -187,14 +189,14 @@ export class EditorContent implements EditorComponent {
         this.element.appendChild(document.createElement('p'));
     }
 
-    insertCollapse() {
+    insertCollapse(args: {className?: string}) {
         let paragraphElement = this.context.selectionUtils.getSelectedParagraph(); 
         if(paragraphElement?.innerText.trim() === "") {
-            paragraphElement.replaceWith(new EditorCollapse(this.context).onMount());
+            paragraphElement.replaceWith(new EditorCollapse(this.context, undefined, args.className).onMount());
         } else {
             for(let child of this.element.children) {
                 if(child === paragraphElement) {
-                    child.after(new EditorCollapse(this.context).onMount());
+                    child.after(new EditorCollapse(this.context, undefined, args.className).onMount());
                     break;
                 }
             }
@@ -272,11 +274,16 @@ class ButtonAdd implements EditorComponent {
         this.element.classList.add("yang-editor-button-add");
         this.element.innerText = "";
         this.element.style.backgroundImage = `url("${images.add2x}")`;
-        this.element.title = "Add Collapsed Panel";
-        this.element.onclick = () => this.context.body.content.insertCollapse();
+
+        let div = document.createElement("div");
+        div.classList.add("yang-editor-button-add-bridge");
+        this.element.appendChild(div)
+
+        //this.element.onclick = () => this.context.body.content.insertCollapse();
     }
 
     onMount(): HTMLElement {
+        this.element.appendChild(new EditorComponentMenu(this.context).onMount());
         return this.element;
     }
 
@@ -532,7 +539,7 @@ export class EditorCollapse implements EditorComponent {
     body: HTMLDivElement;
     container: HTMLDivElement;
 
-    constructor(editor: YangEditor, element?: HTMLElement) {
+    constructor(editor: YangEditor, element?: HTMLElement, className?: string) {
         this.context = editor;
         if(element) {
             this.element = element;
@@ -567,6 +574,9 @@ export class EditorCollapse implements EditorComponent {
 
             this.container.contentEditable = "false";
             this.button.style.backgroundImage = `url("${images.down2x}")`;
+        }
+        if (className) {
+            this.container.classList.add(className);
         }
     }
 
@@ -619,6 +629,70 @@ export class EditorCollapse implements EditorComponent {
     }
 
 }
+
+
+export class EditorComponentMenu implements EditorComponent {
+    public readonly element: HTMLDivElement;
+    public readonly context: YangEditor;
+    public readonly functions: Map<EditorFunction, (args:any) => void> = new Map();
+
+    constructor(editor: YangEditor) {
+        this.context = editor;
+        this.element = document.createElement("div");
+        this.functions.set("insertCollapse", (args) => this.context.body.content.insertCollapse(args));
+    }
+
+    onMounted(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+    onMount(): HTMLElement {
+        this.element.classList.add("yang-editor-component-menu");
+
+        if (this.context.options.menus) {
+
+            let ul = document.createElement("ul");
+            let lis = new Array<HTMLLIElement>();
+
+            for (let item of this.context.options.menus) {
+                let li = document.createElement("li");
+                let icon = document.createElement("button");
+                let text = document.createElement("p");
+                li.classList.add("yang-editor-component-menu-item");
+                icon.classList.add("yang-editor-component-menu-item-icon");
+                text.classList.add("yang-editor-component-menu-item-text");
+                let title = item.name;
+                icon.style.backgroundImage = `url("${item.icon}")`;
+                text.innerText = title;
+                if (item.className) {
+                    li.classList.add(item.className);
+                }
+                if (item.callback) {
+                    let func = this.functions.get(item.callback);
+                    if (func) {
+                        li.onclick = () => {
+                            func(item.args)
+                        };
+                    }
+                }
+                li.appendChild(icon);
+                li.appendChild(text);
+                ul.appendChild(li);
+                lis.push(li);
+            }
+
+            this.element.appendChild(ul);
+        }
+        return this.getElement();
+    }
+
+
+}
+
 
 export class EditorParagraphMenu implements EditorComponent {
     public readonly element: HTMLDivElement;

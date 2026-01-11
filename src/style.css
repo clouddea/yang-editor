@@ -73,7 +73,23 @@
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
+    position: relative;
 }
+
+.yang-editor-button-add .yang-editor-button-add-bridge {
+    width: 128px;
+    height: 40px;
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    display: none;
+}
+
+.yang-editor .yang-editor-button-add:hover .yang-editor-button-add-bridge {
+    display: block;
+    z-index: 1;
+}
+
 
 .yang-editor .yang-editor-color-strip {
     padding-left: 19px;
@@ -289,3 +305,54 @@
     border-radius: 6px;
 }
 
+.yang-editor .yang-editor-button-add:hover .yang-editor-component-menu {
+    display: block;
+}
+
+.yang-editor .yang-editor-component-menu {
+    width: 180px;
+    padding: 4px 8px;
+    opacity: 1;
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(217, 217, 217, 1);
+    box-shadow: 1px 1px 5px  rgba(217, 217, 217, 0.3);
+    border-radius: 6px;
+    position: absolute;
+    left: 0;
+    top: 31px;
+    display: none;
+    z-index: 1;
+}
+
+.yang-editor .yang-editor-component-menu-item {
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.yang-editor .yang-editor-component-menu-item:hover {
+    background: rgba(239, 240, 240, 1);
+}
+
+.yang-editor .yang-editor-component-menu-item-icon {
+    flex-shrink: 0;
+    background: transparent;
+    margin-right: 8px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+
+}
+
+.yang-editor .yang-editor-component-menu-item-text {
+    flex-shrink: 1;
+    flex-grow: 1;
+    text-align: left;
+}

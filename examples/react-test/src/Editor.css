@@ -4,6 +4,12 @@
     margin: 12px auto 0;
 }
 
+.yang-editor-component-menu-item.gray {
+    color: #999999;
+}
 
+.yang-editor-collapse-container.gray .yang-editor-collapse-title {
+    color: #999999;
+}
 
 
