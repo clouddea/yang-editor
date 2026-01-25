@@ -1,5 +1,6 @@
 import { images } from "./images";
 import {YangEditor, YangEditorColor} from "./index";
+import { FormatCleaner } from "./utils";
 
 export interface EditorElement {
 }
@@ -164,20 +165,38 @@ export class EditorContent implements EditorComponent {
         }
 
         this.element.onpaste = (e) => {
-            // TODO: handle paste event
-            //e.preventDefault();
-            // let clipboardData = e.clipboardData;
-            // if (clipboardData) {
-            //     let html = clipboardData.getData("text/html");
-            //     let text = clipboardData.getData("text/plain");
-            //     if (html) {
-            //         let div = document.createElement("div");
-            //         div.innerHTML = html;
-            //         this.element.appendChild(div);
-            //     } else if (text) {
-            //         this.element.appendChild(document.createTextNode(text));
-            //     }
-            // }
+            e.preventDefault();
+            
+            let clipboardData = e.clipboardData;
+            if (!clipboardData) return;
+            
+            // get clipboard content
+            let html = clipboardData.getData("text/html");
+            let text = clipboardData.getData("text/plain");
+            
+            let cleanedText = '';
+            if (html) {
+                cleanedText = FormatCleaner.cleanHTMLString(html);
+            } else if (text) {
+                cleanedText = text;
+            }
+            if (cleanedText) {
+                // insert content into selection range
+                const range = this.context.selectionUtils.getSelectionRange();
+                if (range) {
+                    const lines = cleanedText.split('\n').filter(line => line.trim());
+                    const fragment = document.createDocumentFragment();
+                    lines.forEach((line, index) => {
+                        fragment.appendChild(document.createTextNode(line));
+                        if (index < lines.length - 1) {
+                            fragment.appendChild(document.createElement('br'));
+                        }
+                    });
+                    range.deleteContents();
+                    range.insertNode(fragment);
+                    range.collapse(false);
+                }
+            }
         }
 
         this.insertDefaultParagraph();
