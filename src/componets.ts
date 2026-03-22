@@ -625,6 +625,9 @@ export class EditorCollapse implements EditorComponent {
         } else {
             this.element.classList.add(EditorCollapse.COLLAPSE_STYLE);
         }
+        if (this.context.options.events.onContentChange) {
+            this.context.options.events.onContentChange(this.context.body.content.element.innerHTML);
+        }
     }
 
     isCollapsed() {
